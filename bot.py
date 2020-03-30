@@ -3,8 +3,11 @@ import requests as req
 from discord.ext import commands
 
 client = commands.Bot(command_prefix = 'covid!')
-tokenFile = open("token.txt", "r")
-token = tokenFile.read().rstrip()
+runFile = open("info.json", "r")
+runInfo = json.loads(runFile.read().rstrip())
+
+token = runInfo["token"]
+stateCodes = runInfo["stateCodes"]
 
 @client.event
 async def on_ready():
@@ -14,10 +17,15 @@ async def on_ready():
 async def state(ctx,*,inpState):
 	rV = ''
 	stateData = {}
+
+	if inpState.upper() in stateCodes:
+		toFind = stateCodes[inpState.upper()]
+	else:
+		toFind = inpState
 	
 	data = json.loads(req.get('https://corona.lmao.ninja/states').text)
 	for state in data:
-		if state["state"].lower() == inpState.lower():
+		if state["state"].lower() == toFind.lower():
 			stateData = state
 	
 	if stateData == {}:
