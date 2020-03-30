@@ -7,7 +7,7 @@
  - Get Covid-19 stats for a specific country
    - *covid!country (country name or abbreviation)*
  - Get Covid-19 stats for a specific state in the US
-   - *covid!state (state name)*
+   - *covid!state (state name/code)*
  - A function to know what time it is
    - *covid!time*
 
