@@ -23,7 +23,7 @@ async def state(ctx,*,inpState):
 	else:
 		toFind = inpState
 	
-	data = json.loads(req.get('https://corona.lmao.ninja/states').text)
+	data = json.loads(req.get('https://corona.lmao.ninja/v2/states').text)
 	for state in data:
 		if state["state"].lower() == toFind.lower():
 			stateData = state
@@ -36,16 +36,21 @@ async def state(ctx,*,inpState):
 		rV += "Today's New Cases: " + str(stateData["todayCases"]) + '\n'
 		rV += 'Total Deaths: ' + str(stateData["deaths"]) + '\n'
 		rV += "Today's New Deaths: " + str(stateData["todayDeaths"]) + '\n'
+		rV += 'Tests Issued: ' + str(stateData["tests"]) + '\n'
 		rV += 'Active Cases: ' + str(stateData["active"])
 		await ctx.send(rV)
 
 @client.command()
 async def total(ctx):
 	rV = 'Current Covid-19 Global Stats\n======================\n'
-	data = json.loads(req.get('https://corona.lmao.ninja/all').text)
+	data = json.loads(req.get('https://corona.lmao.ninja/v2/all').text)
 	rV += 'Total Cases: ' + str(data["cases"]) + '\n'
 	rV += 'Total Deaths: ' + str(data["deaths"]) + '\n'
-	rV += 'Total Recoveries: ' + str(data["recovered"])
+	rV += 'Total Recoveries: ' + str(data["recovered"]) + '\n'
+	rV += 'Active Cases: ' + str(data['active']) + '\n'
+	rV += 'Critical Cases: ' + str(data['critical']) + '\n'
+	rV += 'Tests Issued: ' + str(data['tests']) + '\n'
+	rV += 'Countries Affected: ' + str(data['affectedCountries'])
 	await ctx.send(rV)
 
 @client.command()
@@ -55,7 +60,7 @@ async def country(ctx,*,inpNation):
 	inpNation = inpNation.replace(' ','%20')
 
 	try:
-		data = json.loads(req.get('https://corona.lmao.ninja/countries/' + inpNation).text)
+		data = json.loads(req.get('https://corona.lmao.ninja/v2/countries/' + inpNation).text)
 		rV += 'Covid-19 in ' + data["country"] + '\n======================\n'
 		rV += 'Total Cases: ' + str(data["cases"]) + '\n'
 		rV += "Today's New Cases: " + str(data["todayCases"]) + '\n'
@@ -65,7 +70,8 @@ async def country(ctx,*,inpNation):
 		rV += 'Active Cases: ' + str(data["active"]) + '\n'
 		rV += 'Critical Cases: ' + str(data["critical"]) + '\n'
 		rV += 'Cases per Million: ' + str(data["casesPerOneMillion"]) + '\n'
-		rV += 'Deaths per Million: ' + str(data["deathsPerOneMillion"])
+		rV += 'Deaths per Million: ' + str(data["deathsPerOneMillion"]) + '\n'
+		rV += 'Tests Issued: ' + str(data['tests'])
 		await ctx.send(rV)
 	except:
 		await ctx.send('Could not find country data for ' + inpNationOrig)
