@@ -8,6 +8,8 @@
    - *covid!country (country name or abbreviation)*
  - Get Covid-19 stats for a specific state in the US
    - *covid!state (state name/code)*
+ - Get Top 5 State in the US affected by Covid-19
+   - *covid!statetop*
  - A function to know what time it is
    - *covid!time*
 
