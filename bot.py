@@ -41,6 +41,24 @@ async def state(ctx,*,inpState):
 		await ctx.send(rV)
 
 @client.command()
+async def statetop(ctx):
+	rV = ''
+	
+	data = json.loads(req.get('https://corona.lmao.ninja/v2/states').text)
+	rV += 'Covid-19 Top10 States\n======================\n'
+	for i in range(10):
+		rV += '#' + str(i + 1) + ': ' + data[i]["state"] + '\n'
+		rV += '   Total Cases: ' + str(stateData["cases"]) + '\n'
+		rV += '   Total Deaths: ' + str(stateData["deaths"]) + '\n'
+		rV += '   Tests Issued: ' + str(stateData["tests"]) + '\n'
+		rV += '   Active Cases: ' + str(stateData["active"])
+		
+		if i != 9:
+			rV += '\n\n'
+
+	await ctx.send(rV)
+
+@client.command()
 async def total(ctx):
 	rV = 'Current Covid-19 Global Stats\n======================\n'
 	data = json.loads(req.get('https://corona.lmao.ninja/v2/all').text)
