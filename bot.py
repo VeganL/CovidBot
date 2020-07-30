@@ -45,15 +45,15 @@ async def statetop(ctx):
 	rV = ''
 	
 	data = json.loads(req.get('https://corona.lmao.ninja/v2/states').text)
-	rV += 'Covid-19 Top10 States\n======================\n'
-	for i in range(10):
+	rV += 'Covid-19 Top 5 States\n======================\n'
+	for i in range(5):
 		rV += '#' + str(i + 1) + ': ' + data[i]["state"] + '\n'
-		rV += '   Total Cases: ' + str(stateData["cases"]) + '\n'
-		rV += '   Total Deaths: ' + str(stateData["deaths"]) + '\n'
-		rV += '   Tests Issued: ' + str(stateData["tests"]) + '\n'
-		rV += '   Active Cases: ' + str(stateData["active"])
+		rV += '    Total Cases: ' + str(data[i]["cases"]) + '\n'
+		rV += '    Total Deaths: ' + str(data[i]["deaths"]) + '\n'
+		rV += '    Tests Issued: ' + str(data[i]["tests"]) + '\n'
+		rV += '    Active Cases: ' + str(data[i]["active"])
 		
-		if i != 9:
+		if i != 4:
 			rV += '\n\n'
 
 	await ctx.send(rV)
