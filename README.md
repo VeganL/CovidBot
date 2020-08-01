@@ -19,4 +19,4 @@
 ### To add CovidBot to a server, use this [link](https://discordapp.com/api/oauth2/authorize?client_id=692169900625494067&permissions=3072&scope=bot).
 
 ## API for Covid-19 Data
-The API used for CovidBot is the NovelCOVID/API. Information about this API can be found [here](https://corona.lmao.ninja/).
+The API used for CovidBot is the NovelCOVID/API: disease.sh. Information about this API can be found [here](https://disease.sh/).
