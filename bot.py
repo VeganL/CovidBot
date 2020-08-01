@@ -16,35 +16,30 @@ async def on_ready():
 @client.command()
 async def state(ctx,*,inpState):
 	rV = ''
-	stateData = {}
 
 	if inpState.upper() in stateCodes:
-		toFind = stateCodes[inpState.upper()]
+		toFind = stateCodes[inpState.upper()].replace(' ','%20')
 	else:
-		toFind = inpState
+		toFind = inpState.replace(' ','%20')
 	
-	data = json.loads(req.get('https://corona.lmao.ninja/v2/states').text)
-	for state in data:
-		if state["state"].lower() == toFind.lower():
-			stateData = state
-	
-	if stateData == {}:
-		await ctx.send('Could not find state data for ' + inpState)
-	else:
-		rV += 'Covid-19 in ' + stateData["state"] + '\n======================\n'
-		rV += 'Total Cases: ' + str(stateData["cases"]) + '\n'
-		rV += "Today's New Cases: " + str(stateData["todayCases"]) + '\n'
-		rV += 'Total Deaths: ' + str(stateData["deaths"]) + '\n'
-		rV += "Today's New Deaths: " + str(stateData["todayDeaths"]) + '\n'
-		rV += 'Tests Issued: ' + str(stateData["tests"]) + '\n'
-		rV += 'Active Cases: ' + str(stateData["active"])
+	try:
+		data = json.loads(req.get('https://disease.sh/v3/covid-19/states/' + toFind + '?yesterday=false').text)
+		rV += 'Covid-19 in ' + data["state"] + '\n======================\n'
+		rV += 'Total Cases: ' + str(data["cases"]) + '\n'
+		rV += "Today's New Cases: " + str(data["todayCases"]) + '\n'
+		rV += 'Total Deaths: ' + str(data["deaths"]) + '\n'
+		rV += "Today's New Deaths: " + str(data["todayDeaths"]) + '\n'
+		rV += 'Tests Issued: ' + str(data["tests"]) + '\n'
+		rV += 'Active Cases: ' + str(data["active"])
 		await ctx.send(rV)
+	except:
+		await ctx.send('Could not find state data for ' + inpState)
 
 @client.command()
 async def statetop(ctx):
 	rV = ''
 	
-	data = json.loads(req.get('https://corona.lmao.ninja/v2/states').text)
+	data = json.loads(req.get('https://disease.sh/v3/covid-19/states?sort=cases&yesterday=false').text)
 	rV += 'Covid-19 Top 5 States\n======================\n'
 	for i in range(5):
 		rV += '#' + str(i + 1) + ': ' + data[i]["state"] + '\n'
@@ -61,7 +56,7 @@ async def statetop(ctx):
 @client.command()
 async def total(ctx):
 	rV = 'Current Covid-19 Global Stats\n======================\n'
-	data = json.loads(req.get('https://corona.lmao.ninja/v2/all').text)
+	data = json.loads(req.get('https://disease.sh/v3/covid-19/all?yesterday=false&allowNull=false').text)
 	rV += 'Total Cases: ' + str(data["cases"]) + '\n'
 	rV += 'Total Deaths: ' + str(data["deaths"]) + '\n'
 	rV += 'Total Recoveries: ' + str(data["recovered"]) + '\n'
@@ -78,7 +73,7 @@ async def country(ctx,*,inpNation):
 	inpNation = inpNation.replace(' ','%20')
 
 	try:
-		data = json.loads(req.get('https://corona.lmao.ninja/v2/countries/' + inpNation).text)
+		data = json.loads(req.get('https://disease.sh/v3/covid-19/countries/' + inpNation + '?yesterday=false&allowNull=false').text)
 		rV += 'Covid-19 in ' + data["country"] + '\n======================\n'
 		rV += 'Total Cases: ' + str(data["cases"]) + '\n'
 		rV += "Today's New Cases: " + str(data["todayCases"]) + '\n'
@@ -93,6 +88,24 @@ async def country(ctx,*,inpNation):
 		await ctx.send(rV)
 	except:
 		await ctx.send('Could not find country data for ' + inpNationOrig)
+
+@client.command()
+async def countrytop(ctx):
+	rV = ''
+	
+	data = json.loads(req.get('https://disease.sh/v3/covid-19/countries?yesterday=false&sort=cases&allowNull=false').text)
+	rV += 'Covid-19 Top 5 Countries\n======================\n'
+	for i in range(5):
+		rV += '#' + str(i + 1) + ': ' + data[i]["country"] + '\n'
+		rV += '    Total Cases: ' + str(data[i]["cases"]) + '\n'
+		rV += '    Total Deaths: ' + str(data[i]["deaths"]) + '\n'
+		rV += '    Tests Issued: ' + str(data[i]["tests"]) + '\n'
+		rV += '    Active Cases: ' + str(data[i]["active"])
+		
+		if i != 4:
+			rV += '\n\n'
+
+	await ctx.send(rV)
 
 @client.command()
 async def time(ctx):
