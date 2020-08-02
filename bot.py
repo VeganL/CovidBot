@@ -36,15 +36,41 @@ async def state(ctx,*,inpState):
 		await ctx.send('Could not find state data for ' + inpState)
 
 @client.command()
-async def statetop(ctx):
+async def statetop(ctx,*,sortByInp='cases'):
 	rV = ''
+
+	sortByDict = {
+		'case': 'cases',
+		'deaths': 'deaths',
+		'death': 'deaths',
+		'tests': 'tests',
+		'test': 'tests',
+		'active': 'active',
+		'todaycases': 'todayCases',
+		'todaycase': 'todayCases',
+		'casestoday': 'todayCases',
+		'casetoday': 'todayCases',
+		'todaydeaths': 'todayDeaths',
+		'todaydeath': 'todayDeaths',
+		'deathstoday': 'todayDeaths',
+		'deathtoday': 'todayDeaths'
+		}
 	
-	data = json.loads(req.get('https://disease.sh/v3/covid-19/states?sort=cases&yesterday=false').text)
+	if sortByInp != 'cases' and sortByInp.replace(' ','').lower() in sortByDict:
+		sortBy = sortByDict[sortByInp.replace(' ','').lower()]
+	elif sortByInp.lower() == 'cases':
+		sortBy = sortByInp.lower()
+	else:
+		await ctx.send('Cannot sort by parameter "' + sortByInp + '"')
+
+	data = json.loads(req.get('https://disease.sh/v3/covid-19/states?sort=' + sortBy + '&yesterday=false').text)
 	rV += 'Covid-19 Top 5 States\n======================\n'
 	for i in range(5):
 		rV += '#' + str(i + 1) + ': ' + data[i]["state"] + '\n'
 		rV += '    Total Cases: ' + str(data[i]["cases"]) + '\n'
+		rV += "    Today's New Cases: " + str(data[i]["todayCases"]) + '\n'
 		rV += '    Total Deaths: ' + str(data[i]["deaths"]) + '\n'
+		rV += "    Today's New Deaths: " + str(data[i]["todayDeaths"]) + '\n'
 		rV += '    Tests Issued: ' + str(data[i]["tests"]) + '\n'
 		rV += '    Active Cases: ' + str(data[i]["active"])
 		
@@ -90,15 +116,41 @@ async def country(ctx,*,inpNation):
 		await ctx.send('Could not find country data for ' + inpNationOrig)
 
 @client.command()
-async def countrytop(ctx):
+async def countrytop(ctx,*,sortByInp='cases'):
 	rV = ''
 	
-	data = json.loads(req.get('https://disease.sh/v3/covid-19/countries?yesterday=false&sort=cases&allowNull=false').text)
+	sortByDict = {
+		'case': 'cases',
+		'deaths': 'deaths',
+		'death': 'deaths',
+		'tests': 'tests',
+		'test': 'tests',
+		'active': 'active',
+		'todaycases': 'todayCases',
+		'todaycase': 'todayCases',
+		'casestoday': 'todayCases',
+		'casetoday': 'todayCases',
+		'todaydeaths': 'todayDeaths',
+		'todaydeath': 'todayDeaths',
+		'deathstoday': 'todayDeaths',
+		'deathtoday': 'todayDeaths'
+		}
+	
+	if sortByInp != 'cases' and sortByInp.replace(' ','').lower() in sortByDict:
+		sortBy = sortByDict[sortByInp.replace(' ','').lower()]
+	elif sortByInp.lower() == 'cases':
+		sortBy = sortByInp.lower()
+	else:
+		await ctx.send('Cannot sort by parameter "' + sortByInp + '"')
+
+	data = json.loads(req.get('https://disease.sh/v3/covid-19/countries?yesterday=false&sort=' + sortBy + '&allowNull=false').text)
 	rV += 'Covid-19 Top 5 Countries\n======================\n'
 	for i in range(5):
 		rV += '#' + str(i + 1) + ': ' + data[i]["country"] + '\n'
 		rV += '    Total Cases: ' + str(data[i]["cases"]) + '\n'
+		rV += "    Today's New Cases: " + str(data[i]["todayCases"]) + '\n'
 		rV += '    Total Deaths: ' + str(data[i]["deaths"]) + '\n'
+		rV += "    Today's New Deaths: " + str(data[i]["todayDeaths"]) + '\n'
 		rV += '    Tests Issued: ' + str(data[i]["tests"]) + '\n'
 		rV += '    Active Cases: ' + str(data[i]["active"])
 		

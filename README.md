@@ -7,11 +7,13 @@
  - Get Covid-19 stats for a specific country
    - *covid!country (country name or abbreviation)*
  - Get top 5 countries in the world affected by Covid-19
-   - *covid!countrytop*
+   - *covid!countrytop (optional: sortBy parameter)*
+   - *Ex.: covid!countrytop tests* 
  - Get Covid-19 stats for a specific state in the US
    - *covid!state (state name/code)*
  - Get top 5 states in the US affected by Covid-19
-   - *covid!statetop*
+   - *covid!statetop (optional: sortBy parameter)*
+   - *Ex.: covid!statetop tests* 
  - A function to know what time it is
    - *covid!time*
 
