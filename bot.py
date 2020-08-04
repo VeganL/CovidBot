@@ -1,13 +1,41 @@
 import discord, json, re
 import requests as req
+from random import randint
 from discord.ext import commands
+from googleapiclient.discovery import build
 
 client = commands.Bot(command_prefix = 'covid!')
 runFile = open("info.json", "r")
 runInfo = json.loads(runFile.read().rstrip())
 
+# Bot Globals
 token = runInfo["token"]
 stateCodes = runInfo["stateCodes"]
+
+# YouTube API Globals
+DEVELOPER_KEY = runInfo['youtubeApi']
+YOUTUBE_API_SERVICE_NAME = 'youtube'
+YOUTUBE_API_VERSION = 'v3'
+
+@client.command()
+async def news(ctx):
+	youtube = build(YOUTUBE_API_SERVICE_NAME,YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY)
+
+	search_response = youtube.search().list(
+		q='covid news',
+		part='id',
+		maxResults=10
+	).execute()
+
+	videos = []
+
+	for search_result in search_response.get('items', []):
+		if search_result['id']['kind'] == 'youtube#video':
+			videos.append(search_result['id']['videoId'])
+
+	pick = randint(0,len(videos) - 1)
+
+	await ctx.send('https://www.youtube.com/watch?v=' + videos[pick])
 
 @client.event
 async def on_ready():

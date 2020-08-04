@@ -14,6 +14,8 @@
  - Get top 5 states in the US affected by Covid-19
    - *covid!statetop (optional: sortBy parameter)*
    - *Ex.: covid!statetop tests* 
+ - Get a random news clip about Covid-19
+   - *covid!news*
  - A function to know what time it is
    - *covid!time*
 
