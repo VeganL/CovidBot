@@ -11,6 +11,23 @@ runInfo = json.loads(runFile.read().rstrip())
 # Bot Globals
 token = runInfo["token"]
 stateCodes = runInfo["stateCodes"]
+sortByDict = {
+	'case': 'cases',
+	'deaths': 'deaths',
+	'death': 'deaths',
+	'tests': 'tests',
+	'test': 'tests',
+	'active': 'active',
+	'todaycases': 'todayCases',
+	'todaycase': 'todayCases',
+	'casestoday': 'todayCases',
+	'casetoday': 'todayCases',
+	'todaydeaths': 'todayDeaths',
+	'todaydeath': 'todayDeaths',
+	'deathstoday': 'todayDeaths',
+	'deathtoday': 'todayDeaths'
+	}
+
 
 # YouTube API Globals
 DEVELOPER_KEY = runInfo['youtubeApi']
@@ -67,23 +84,6 @@ async def state(ctx,*,inpState):
 async def statetop(ctx,*,sortByInp='cases'):
 	rV = ''
 
-	sortByDict = {
-		'case': 'cases',
-		'deaths': 'deaths',
-		'death': 'deaths',
-		'tests': 'tests',
-		'test': 'tests',
-		'active': 'active',
-		'todaycases': 'todayCases',
-		'todaycase': 'todayCases',
-		'casestoday': 'todayCases',
-		'casetoday': 'todayCases',
-		'todaydeaths': 'todayDeaths',
-		'todaydeath': 'todayDeaths',
-		'deathstoday': 'todayDeaths',
-		'deathtoday': 'todayDeaths'
-		}
-	
 	if sortByInp != 'cases' and sortByInp.replace(' ','').lower() in sortByDict:
 		sortBy = sortByDict[sortByInp.replace(' ','').lower()]
 	elif sortByInp.lower() == 'cases':
@@ -146,23 +146,6 @@ async def country(ctx,*,inpNation):
 @client.command()
 async def countrytop(ctx,*,sortByInp='cases'):
 	rV = ''
-	
-	sortByDict = {
-		'case': 'cases',
-		'deaths': 'deaths',
-		'death': 'deaths',
-		'tests': 'tests',
-		'test': 'tests',
-		'active': 'active',
-		'todaycases': 'todayCases',
-		'todaycase': 'todayCases',
-		'casestoday': 'todayCases',
-		'casetoday': 'todayCases',
-		'todaydeaths': 'todayDeaths',
-		'todaydeath': 'todayDeaths',
-		'deathstoday': 'todayDeaths',
-		'deathtoday': 'todayDeaths'
-		}
 	
 	if sortByInp != 'cases' and sortByInp.replace(' ','').lower() in sortByDict:
 		sortBy = sortByDict[sortByInp.replace(' ','').lower()]
