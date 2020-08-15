@@ -1,4 +1,4 @@
-import discord, json, re
+import discord, json, re, csv, subprocess
 import requests as req
 from random import randint
 from discord.ext import commands
@@ -11,6 +11,7 @@ runInfo = json.loads(runFile.read().rstrip())
 # Bot Globals
 token = runInfo["token"]
 stateCodes = runInfo["stateCodes"]
+rtCodes = runInfo["rtCodes"]
 sortByDict = {
 	'case': 'cases',
 	'deaths': 'deaths',
@@ -56,6 +57,8 @@ async def news(ctx):
 
 @client.event
 async def on_ready():
+	subprocess.call('rm rt.csv', shell=True)
+	subprocess.call('wget https://d14wlfuexuxgcm.cloudfront.net/covid/rt.csv', shell=True)
 	print('Bot is ready')
 
 @client.command()
@@ -67,6 +70,29 @@ async def state(ctx,*,inpState):
 	else:
 		toFind = inpState.replace(' ','%20')
 	
+	rtCode = toFind.replace('%20',' ').upper()
+	if rtCode not in rtCodes:
+		rt = None
+	else:
+		try:
+			stateRtHist = []
+			with open('rt.csv') as csvFile:
+				stateCode = rtCodes[rtCode]
+				
+				stateRts = csv.DictReader(csvFile)
+
+				firstLine = True
+				for row in stateRts:
+					if firstLine:
+						firstLine = False
+					else:
+						if row['region'] == stateCode:
+							stateRtHist.append(round(float(row['mean']),2))
+			
+			rt = stateRtHist[-1]
+		except:
+			rt = None
+	
 	try:
 		data = json.loads(req.get('https://disease.sh/v3/covid-19/states/' + toFind + '?yesterday=false').text)
 		rV += 'Covid-19 in ' + data["state"] + '\n======================\n'
@@ -76,6 +102,10 @@ async def state(ctx,*,inpState):
 		rV += "Today's New Deaths: " + str(data["todayDeaths"]) + '\n'
 		rV += 'Tests Issued: ' + str(data["tests"]) + '\n'
 		rV += 'Active Cases: ' + str(data["active"])
+
+		if rt is not None:
+			rV += '\nRt Value: ' + str(rt)
+
 		await ctx.send(rV)
 	except:
 		await ctx.send('Could not find state data for ' + inpState)
@@ -173,5 +203,8 @@ async def countrytop(ctx,*,sortByInp='cases'):
 @client.command()
 async def time(ctx):
 	await ctx.send("*It's Corona Time!* :sunglasses::partying_face::skull::ghost:")
+
+def getRt(state):
+	pass
 
 client.run(token)
