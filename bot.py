@@ -104,7 +104,7 @@ async def state(ctx,*,inpState):
 		rV += 'Active Cases: ' + str(data["active"])
 
 		if rt is not None:
-			rV += '\nRt Value: ' + str(rt)
+			rV += '\nEffective Reproduction Rate: ' + str(rt)
 
 		await ctx.send(rV)
 	except:
