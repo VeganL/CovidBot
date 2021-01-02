@@ -124,6 +124,29 @@ async def statetop(ctx,*,sortByInp='cases'):
 	data = json.loads(req.get('https://disease.sh/v3/covid-19/states?sort=' + sortBy + '&yesterday=false').text)
 	rV += 'Covid-19 Top 5 States\n======================\n'
 	for i in range(5):
+		rtCode = data[i]["state"].upper()
+		if rtCode not in rtCodes:
+			rt = None
+		else:
+			try:
+				stateRtHist = []
+				with open('rt.csv') as csvFile:
+					stateCode = rtCodes[rtCode]
+					
+					stateRts = csv.DictReader(csvFile)
+
+					firstLine = True
+					for row in stateRts:
+						if firstLine:
+							firstLine = False
+						else:
+							if row['region'] == stateCode:
+								stateRtHist.append(round(float(row['mean']),2))
+				
+				rt = stateRtHist[-1]
+			except:
+				rt = None
+		
 		rV += '#' + str(i + 1) + ': ' + data[i]["state"] + '\n'
 		rV += '    Total Cases: ' + str(data[i]["cases"]) + '\n'
 		rV += "    Today's New Cases: " + str(data[i]["todayCases"]) + '\n'
@@ -131,6 +154,9 @@ async def statetop(ctx,*,sortByInp='cases'):
 		rV += "    Today's New Deaths: " + str(data[i]["todayDeaths"]) + '\n'
 		rV += '    Tests Issued: ' + str(data[i]["tests"]) + '\n'
 		rV += '    Active Cases: ' + str(data[i]["active"])
+
+		if rt is not None:
+			rV += '\n    Effective Reproduction Rate: ' + str(rt)
 		
 		if i != 4:
 			rV += '\n\n'
