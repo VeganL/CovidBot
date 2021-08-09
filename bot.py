@@ -11,24 +11,6 @@ runInfo = json.loads(runFile.read().rstrip())
 # Bot Globals
 token = runInfo["token"]
 stateCodes = runInfo["stateCodes"]
-rtCodes = runInfo["rtCodes"]
-sortByDict = {
-	'case': 'cases',
-	'deaths': 'deaths',
-	'death': 'deaths',
-	'tests': 'tests',
-	'test': 'tests',
-	'active': 'active',
-	'todaycases': 'todayCases',
-	'todaycase': 'todayCases',
-	'casestoday': 'todayCases',
-	'casetoday': 'todayCases',
-	'todaydeaths': 'todayDeaths',
-	'todaydeath': 'todayDeaths',
-	'deathstoday': 'todayDeaths',
-	'deathtoday': 'todayDeaths'
-	}
-
 
 # YouTube API Globals
 DEVELOPER_KEY = runInfo['youtubeApi']
@@ -55,10 +37,22 @@ async def news(ctx):
 
 	await ctx.send('https://www.youtube.com/watch?v=' + videos[pick])
 
+@client.command()
+async def jhu(ctx):
+	youtube = build(YOUTUBE_API_SERVICE_NAME,YOUTUBE_API_VERSION,developerKey=DEVELOPER_KEY)
+
+	search_response = youtube.playlistItems().list(
+		part='contentDetails',
+		maxResults=1,
+		playlistId='PLnxJP601LarGKt_zbttd3uyl_MqVLW2s1'
+	).execute()
+
+	videoId = search_response['items'][0]['contentDetails']['videoId']
+
+	await ctx.send('https://www.youtube.com/watch?v=' + videoId)
+
 @client.event
 async def on_ready():
-	subprocess.call('rm rt.csv', shell=True)
-	subprocess.call('wget https://d14wlfuexuxgcm.cloudfront.net/covid/rt.csv', shell=True)
 	print('Bot is ready')
 
 @client.command()
@@ -70,29 +64,6 @@ async def state(ctx,*,inpState):
 	else:
 		toFind = inpState.replace(' ','%20')
 	
-	rtCode = toFind.replace('%20',' ').upper()
-	if rtCode not in rtCodes:
-		rt = None
-	else:
-		try:
-			stateRtHist = []
-			with open('rt.csv') as csvFile:
-				stateCode = rtCodes[rtCode]
-				
-				stateRts = csv.DictReader(csvFile)
-
-				firstLine = True
-				for row in stateRts:
-					if firstLine:
-						firstLine = False
-					else:
-						if row['region'] == stateCode:
-							stateRtHist.append(round(float(row['mean']),2))
-			
-			rt = stateRtHist[-1]
-		except:
-			rt = None
-	
 	try:
 		data = json.loads(req.get('https://disease.sh/v3/covid-19/states/' + toFind + '?yesterday=false').text)
 		rV += 'Covid-19 in ' + data["state"] + '\n======================\n'
@@ -102,9 +73,6 @@ async def state(ctx,*,inpState):
 		rV += "Today's New Deaths: " + str(data["todayDeaths"]) + '\n'
 		rV += 'Tests Issued: ' + str(data["tests"]) + '\n'
 		rV += 'Active Cases: ' + str(data["active"])
-
-		if rt is not None:
-			rV += '\nEffective Reproduction Rate: ' + str(rt)
 
 		await ctx.send(rV)
 	except:
@@ -124,29 +92,6 @@ async def statetop(ctx,*,sortByInp='cases'):
 	data = json.loads(req.get('https://disease.sh/v3/covid-19/states?sort=' + sortBy + '&yesterday=false').text)
 	rV += 'Covid-19 Top 5 States\n======================\n'
 	for i in range(5):
-		rtCode = data[i]["state"].upper()
-		if rtCode not in rtCodes:
-			rt = None
-		else:
-			try:
-				stateRtHist = []
-				with open('rt.csv') as csvFile:
-					stateCode = rtCodes[rtCode]
-					
-					stateRts = csv.DictReader(csvFile)
-
-					firstLine = True
-					for row in stateRts:
-						if firstLine:
-							firstLine = False
-						else:
-							if row['region'] == stateCode:
-								stateRtHist.append(round(float(row['mean']),2))
-				
-				rt = stateRtHist[-1]
-			except:
-				rt = None
-		
 		rV += '#' + str(i + 1) + ': ' + data[i]["state"] + '\n'
 		rV += '    Total Cases: ' + str(data[i]["cases"]) + '\n'
 		rV += "    Today's New Cases: " + str(data[i]["todayCases"]) + '\n'
@@ -155,9 +100,6 @@ async def statetop(ctx,*,sortByInp='cases'):
 		rV += '    Tests Issued: ' + str(data[i]["tests"]) + '\n'
 		rV += '    Active Cases: ' + str(data[i]["active"])
 
-		if rt is not None:
-			rV += '\n    Effective Reproduction Rate: ' + str(rt)
-		
 		if i != 4:
 			rV += '\n\n'
 
