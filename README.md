@@ -4,6 +4,8 @@
 ## Features
  - Get global Covid-19 stats
    - *covid!total*
+ - Get daily Johns Hopkins University synopsis video of COVID-19 trends
+   - *covid!jhu*
  - Get Covid-19 stats for a specific country
    - *covid!country (country name or abbreviation)*
  - Get top 5 countries in the world affected by Covid-19
